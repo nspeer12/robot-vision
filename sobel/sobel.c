@@ -62,7 +62,14 @@ char **argv;
     {
          hiThreshold = atof(foobar);
     }
- 
+    
+    // ignore header of input image and move file pointer forward
+    char blank[20];
+    for (i=0;i<4;i++)
+    {
+        fscanf(fp1,"%s", blank);
+    }
+
     /* scan in image */
     for (i=0;i<256;i++)
     {
@@ -71,7 +78,7 @@ char **argv;
             pic[i][j]  =  getc (fp1);
 
             /* legacy octal eight 1s bitmask for reading chars */
-            pic[i][j]  &= 0377;
+            pic[i][j] &= 0377;
 
             magnitude += pic[i][j];
         }
@@ -103,9 +110,10 @@ char **argv;
     
     int diff;
     maxival = 0;
-    for (i=mr;i<256-mr;i++)
+    // changed for loop    
+    for (i=0;i<256;i++)
     {
-        for (j=mr;j<256-mr;j++)
+        for (j=0;j<256;j++)
         {
             // magnitude vector
             diff = sqrt((double)((outpicx[i][j]*outpicx[i][j]) + (outpicy[i][j]*outpicy[i][j])));
