@@ -65,7 +65,6 @@ char **argv;
     for (i=0;i<4;i++)
     {
         fscanf(fp1,"%s", blank);
-        //printf("%s", test);
     }
 
     // read input picture into memory
@@ -141,6 +140,7 @@ char **argv;
         }
     }
 
+
     // compute peaks
     for (i=mr;i<256-mr;i++)
     {
@@ -148,7 +148,7 @@ char **argv;
         {
             if(outpicx[i][j] == 0.0)
             {
-                outpicx[i][j] == 0.00001;
+                outpicx[i][j] = 0.00001;
             }
 
          slope = (double)(outpicy[i][j])/(double)(outpicx[i][j]);
@@ -211,8 +211,8 @@ char **argv;
 
     /* find HI threshold */
 
-    // let HI be the top 2% of pixel values
-    percent = 0.06;
+    // hi percentage
+    percent = 0.05;
 
     // create histogram
     for (i=mr;i<256-mr;i++)

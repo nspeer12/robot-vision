@@ -12,6 +12,8 @@ int outpicy[256][256];
 int maskx[3][3] = {{-1,0,1},{-2,0,2},{-1,0,1}};
 int masky[3][3] = {{1,2,1},{0,0,0},{-1,-2,-1}};
 double ival[256][256],maxival;
+double lo[256][256];
+double hi[256][256];
 
 int main(argc, argv)
 int argc;
@@ -21,10 +23,13 @@ char **argv;
     double threshold;        // lo threshold
     double hiThreshold = 100;
 
-    FILE *fo1, *fo2, *fp1, *fopen();
+    FILE *fo1, *fo2, *fo3, *fp1, *fopen();
     char *foobar;
        
     int magnitude = 0;
+    
+    int rows = 256;
+    int cols = 256;
 
     /* input file */
     argc--; argv++;
@@ -32,16 +37,25 @@ char **argv;
     fp1=fopen(foobar,"rb");
 
     /* output file */
-	argc--; argv++;
-	foobar = *argv;
-	fo1=fopen(foobar,"wb");
+
+	fo1=fopen("output/magnitude.pgm","wb");
     
-    int rows = 256;
-    int cols = 256;
-    
+       
     /* write PGM header */
     fprintf(fo1, "P5\n%d %d\n255\n", rows, cols);
-        
+    
+    fo2=fopen("output/lo.pgm","wb");
+    
+       
+    /* write PGM header */
+    fprintf(fo2, "P5\n%d %d\n255\n", rows, cols);
+   
+    fo3=fopen("output/hi.pgm","wb");
+    
+       
+    /* write PGM header */
+    fprintf(fo3, "P5\n%d %d\n255\n", rows, cols);
+
     argc--; argv++;
 	foobar = *argv;
 
@@ -119,14 +133,16 @@ char **argv;
             diff = sqrt((double)((outpicx[i][j]*outpicx[i][j]) + (outpicy[i][j]*outpicy[i][j])));
             
             // is the magnitude of the jump big enough?            
-            ival[i][j] = diff > threshold && diff < hiThreshold ? 1 : 0;
-    
+            //ival[i][j] = diff > threshold && diff < hiThreshold ? 1 : 0;
+            ival[i][j] = diff;
+
             if (ival[i][j] > maxival)
                 maxival = ival[i][j];
 
         }
     }
-    
+   
+    // output magnitude image
     // normalize pixels and output image
     for (i=0;i<256;i++)
     {
@@ -135,6 +151,36 @@ char **argv;
              ival[i][j] = (ival[i][j] / maxival) * 255;            
              fprintf(fo1,"%c",(char)((int)(ival[i][j])));
              
+        }
+    }
+    
+    // LO threshold
+    for (i=0;i<256;i++)
+    {
+        for (j=0;j<256;j++)
+        {
+                                             
+            if (ival[i][j] > threshold)
+                fprintf(fo2,"%c",(char)((int)(255)));
+            else
+                fprintf(fo2,"%c",(char)((int)(0)));
+
+           
+        }
+    }
+     
+    // HI threshold
+    for (i=0;i<256;i++)
+    {
+        for (j=0;j<256;j++)
+        {
+                                              
+            if (ival[i][j] < hiThreshold)
+                fprintf(fo3,"%c",(char)((int)(0)));
+            else
+                fprintf(fo3,"%c",(char)((int)(255)));
+
+           
         }
     }
     
